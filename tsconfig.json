@@ -8,6 +8,7 @@
     "sourceMap": true,
 		"allowJs": true,
 		"checkJs": true,
+    "skipLibCheck": true,
   },
   "lib": ["es2015"]
 }

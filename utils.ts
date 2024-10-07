@@ -1,9 +1,10 @@
 import { Readability } from "@mozilla/readability"
 import { parseHTML } from "linkedom"
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
 import { SearchRequest, SearchResponse, SearchResult } from "./types";
 
 const BASE_URL = "https://sg.search.yahoo.com/search";
+export const NOT_FOUND_TITLE = "Could not fetch the page.";
 
 export async function getHtml({
   query,
@@ -84,19 +85,7 @@ export async function webSearch(
   const response: SearchResponse = await getHtml(search);
 
   let results: SearchResult[];
-  if (response.url.startsWith(BASE_URL)) {
-    results = htmlToSearchResults(response.html, numResults);
-  } else {
-    const result = await getWebpageTitleAndText(response.url, response.html);
-
-    return [
-      {
-        title: result.title,
-        body: result.body,
-        url: response.url,
-      },
-    ];
-  }
+  results = htmlToSearchResults(response.html, numResults);
 
   return results;
 }
@@ -118,14 +107,14 @@ export async function getWebpageTitleAndText(url: string, html_str = ''): Promis
             response = await fetch(url.startsWith('http') ? url : `https://${url}`)
         } catch (e) {
             return {
-                title: 'Could not fetch the page.',
+                title: NOT_FOUND_TITLE,
                 body: `Could not fetch the page: ${e}.\nMake sure the URL is correct.`,
                 url
             }
         }
         if (!response.ok) {
             return {
-                title: "Could not fetch the page.",
+                title: NOT_FOUND_TITLE,
                 body: `Could not fetch the page: ${response.status} ${response.statusText}`,
                 url
             }
