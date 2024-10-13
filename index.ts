@@ -1,8 +1,11 @@
 import express from 'express';
+import morgan from 'morgan';
 import { NOT_FOUND_TITLE, getWebpageTitleAndText, webSearch } from "./utils";
 
 const app = express();
-const port = 3000;
+const port = 3300;
+
+app.use(morgan('combined'))
 
 app.get('/search-results', async (req, res) => {
   const searchRequest = {
